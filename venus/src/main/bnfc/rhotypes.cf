@@ -1,0 +1,87 @@
+-- Coercions
+_.                   ProcType ::= ProcType1                                ;
+_.                  ProcType1 ::= ProcType2                                ;
+_.                  ProcType2 ::= ProcType3                                ;
+_.                  ProcType3 ::= ProcType4                                ;
+_.                  ProcType4 ::= "{" ProcType "}"                         ;
+
+-- Basic spatial-behavioral types
+TNil .              ProcType4 ::= "|0|"                                    ;
+TGround .           ProcType4 ::= GroundType                               ;
+TVarRef .           ProcType4 ::= TypeVar                                  ;
+TCollect .          ProcType3 ::= CollectionType                           ;
+TEval .             ProcType2 ::= "*" NameType                             ;
+TSend .             ProcType2 ::= "<" NameType Send "(" [ProcType] ")" ">" ;
+TRecv .             ProcType2 ::= "<" ReceiptType ">" "{" ProcType "}"     ;
+TModal .            ProcType2 ::= "<" ProcType2 ">" ProcType1              ;
+TDef .              ProcType1 ::= "type" TypeName "[" [TypeVar] "]" "=" "{" ProcType "}" ;
+TCall .             ProcType1 ::= TypeName "[" [ProcType] "]"              ;
+TSum .              ProcType1 ::= "Sum" "{" [BranchType] "}"               ;
+TCharacter .        ProcType1 ::= "?" ProcType1                            ;
+TPar .               ProcType ::= ProcType "|" ProcType1                   ;
+separator ProcType ","                                                     ;
+
+-- Note bene: Bool must be equal to Verity \oplus Absurdity
+BoolType .         GroundType ::= "Bool"                                   ; 
+VerityType .       GroundType ::= "Verity"                                 ;
+AbsurdityType .    GroundType ::= "Absurdity"                              ;
+LongType .         GroundType ::= "Long"                                   ;
+StringType .       GroundType ::= "String"                                 ;
+UriType .          GroundType ::= "URI"                                    ;
+
+ListType .     CollectionType ::= "[|" ProcType "|]"                       ;
+TupleType .    CollectionType ::= "(|" [ProcType] "|)"                     ;
+SetType   .    CollectionType ::= "{|" ProcType "|}"                       ;
+MapType   .    CollectionType ::= "{-" [KVType] "-}"                       ;
+KVTypeInst .           KVType ::= ProcType "|->" ProcType                  ;
+separator KVType ","                                                       ;
+
+QuoteType .          NameType ::= "@" ProcType3                            ;
+--VarType   .          NameType ::= "@" "_"                                  ;
+separator NameType ","                                                     ;
+
+SmplSrcType .     NameSrcType ::= NameType                                 ;
+RcvSndSrcType .   NameSrcType ::= NameType "?!"                            ;
+SndRcvSrcType .   NameSrcType ::= NameType "!?"                            ;
+
+RcptLType .       ReceiptType ::= RcptLTypeInst                            ;
+RcptRType .       ReceiptType ::= RcptRTypeInst                            ;
+RcptPType .       ReceiptType ::= RcptPTypeInst                            ;
+separator nonempty ReceiptType " ;"                                        ;
+
+LSmplType .     RcptLTypeInst ::= [LBindType]                              ;
+LBndTypeInst .      LBindType ::= [NameType] NameRemType "<-" NameSrcType  ;
+separator nonempty LBindType "&"                                           ;
+
+RSmplType .     RcptRTypeInst ::= [RBindType]                              ;
+RBndTypeInst .      RBindType ::= [NameType] NameRemType "<=" NameType     ;
+separator nonempty RBindType "&"                                           ;
+
+PSmplType .     RcptPTypeInst ::= [PBindType]                              ;
+PBndTypeInst .      PBindType ::= [NameType] NameRemType "<<-" NameType    ;
+separator nonempty PBindType "&"                                           ;
+
+BranchTypeInst .   BranchType ::= "<" ReceiptType ">" "{" ProcType "}"     ;
+separator nonempty BranchType ";"                                          ;
+
+NameRemVarType.   NameRemType ::= "..." "@" ProcType                       ;
+NameRemEmptyType. NameRemType ::= ""                                       ;
+
+SendSingle .             Send ::= "!"                                      ;
+SendMultiple .           Send ::= "!!"                                     ;
+
+-- TypeVars
+TypeVarWildcard .    TypeVar ::= "_"                                       ;
+TypeVarVar .         TypeVar ::= UVar                                      ;
+separator TypeVar ","                                                      ;
+
+-- TypeNames
+TypeNameVar .       TypeName ::= LVar                                      ;
+separator TypeName ","                                                     ;
+
+token UVar ((upper (letter | digit | '_' | '\'')*)|(('_') (upper | digit | '_' | '\'')+)) ;
+token LVar (((lower | '\'') (letter | digit | '_' | '\'')*)|(('_') (lower | digit | '_' | '\'')+)) ;
+
+-- Comments:
+comment "//" ;
+comment "/*" "*/" ;
