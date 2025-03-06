@@ -63,7 +63,7 @@ POr.             Proc4  ::= Proc4 "or" Proc5 ;
 PSend.           Proc3  ::= Name Send "(" [Proc] ")" ;
 PContr.          Proc2  ::= "contract" Name "(" [Name] NameRemainder")" "=" "{" Proc "}" ;
 PInput.          Proc2  ::= "for" "(" [Receipt] ")" "{" Proc "}" ;
-PSymmIO.         Proc2  ::= "when" "(" [ReceiptSymm] ")" "{" Proc "}" ;
+--PSymmIO.         Proc2  ::= "when" "(" [ReceiptSymm] ")" "{" Proc "}" ;
 PSynchIO.        Proc2  ::= "foreach" "(" [ReceiptSynch] ")" "{" Proc "}" ;
 PChoice.         Proc2  ::= "select" "{" [Branch] "}" ;
 PMatch.          Proc2  ::= "match" Proc4 "{" [Case] "}" ;
@@ -119,6 +119,11 @@ BundleReadWrite. Bundle ::= "bundle"  ;
 ReceiptLinear.    Receipt ::= ReceiptLinearImpl ;
 ReceiptRepeated.  Receipt ::= ReceiptRepeatedImpl ;
 ReceiptPeek.      Receipt ::= ReceiptPeekImpl ;
+-- ReceiptSymm
+ReceiptSymmLinear.    Receipt ::= ReceiptSymmLinearImpl ;
+ReceiptSymmRepeated.  Receipt ::= ReceiptSymmRepeatedImpl ;
+ReceiptSymmPeek.      Receipt ::= ReceiptSymmPeekImpl ;
+--separator nonempty ReceiptSymm ";" ;
 separator nonempty Receipt ";" ;
 
 -- Linear Receipts
@@ -146,12 +151,6 @@ PeekSimple. ReceiptPeekImpl ::= [PeekBind] ;
 -- Single Peek
 PeekBindImpl. PeekBind ::= [Name] NameRemainder "<<-" Name ;
 separator nonempty PeekBind "&" ;
-
--- ReceiptSymm
-ReceiptSymmLinear.    ReceiptSymm ::= ReceiptSymmLinearImpl ;
-ReceiptSymmRepeated.  ReceiptSymm ::= ReceiptSymmRepeatedImpl ;
-ReceiptSymmPeek.      ReceiptSymm ::= ReceiptSymmPeekImpl ;
-separator nonempty ReceiptSymm ";" ;
 
 -- Linear ReceiptSymms
 LinearSymmSimple. ReceiptSymmLinearImpl ::= [LinearBindSymm] ;
@@ -214,6 +213,7 @@ separator nonempty PeekBindSynch "&" ;
 -- Types of Send:
 SendSingle.   Send ::= "!" ;
 SendMultiple. Send ::= "!!" ;
+SendSymm.     Send ::= "!$" ;
 
 -- Select Branches
 BranchImpl. Branch ::= ReceiptLinearImpl "=>" Proc3 ;
