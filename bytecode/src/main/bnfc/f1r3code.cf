@@ -1,113 +1,112 @@
 -- A program is a collection of RSpaces (isomorphic to rho) together
 -- with a stack.
 
+-- Literals
 -- Custom integer token according to https://github.com/BNFC/bnfc/issues/153#issuecomment-152612231
 -- notice this shadows the built-in Integer token, which might be a problem if we need integers
 -- in the grammar for other purposes than the integer literal.
 position token LongLiteral digit+;
 token StringLiteral ( '"' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '"' );
+-- Booleans:
+BoolTrue         . BoolLiteral ::= "true" ;
+BoolFalse        . BoolLiteral ::= "false" ;
 
 -- Program
-PROGRAM          . Machine  ::= "(" [InstSeq] ")" ;
+PROGRAM          . Machine     ::= "(" [InstSeq] ")" ;
 
 -- Sequence
-SEQUENCE         . InstSeq  ::= [Inst] ;
+SEQUENCE         . InstSeq     ::= [Inst] ;
 separator nonempty InstSeq "|" ;
 
 -- Instructions
-PrimOp           . Inst     ::= CompInst    ;
-EvalOp           . Inst     ::= EvalInst    ;
-PtrnOp           . Inst     ::= PtrnInst    ;
-RefOp            . Inst     ::= RefInst     ;
-RSpaceOp         . Inst     ::= RSpaceInst  ;
+PrimOp           . Inst        ::= CompInst    ;
+EvalOp           . Inst        ::= EvalInst    ;
+PtrnOp           . Inst        ::= PtrnInst    ;
+RefOp            . Inst        ::= RefInst     ;
+RSpaceOp         . Inst        ::= RSpaceInst  ;
 separator nonempty Inst ":" ;
 
 -- COMPUTATIONAL INSTRUCTIONS:
-NOP              . CompInst ::= "NOP" ; -- No operation
-PUSH_INT         . CompInst ::= "PUSH_INT" LongLiteral ;          -- Push integer literal
-PUSH_STR         . CompInst ::= "PUSH_STR" StringLiteral ;          -- Push string literal
-PUSH_BOOL        . CompInst ::= "PUSH_BOOL" BoolLiteral ;         -- Push boolean literal
-PUSH_PROC        . CompInst ::= "PUSH_PROC" Proc ;      -- Push process to stack
-POP              . CompInst ::= "POP" ;                  -- Pop top of stack
-DUP              . CompInst ::= "DUP" ;                 -- Duplicate top of stack
-LOAD_VAR         . CompInst ::= "LOAD_VAR" LongLiteral ;          -- Load variable by index
-LOAD_LOCAL       . CompInst ::= "LOAD_LOCAL" LongLiteral ;        -- Load local variable by index
-STORE_LOCAL      . CompInst ::= "STORE_LOCAL" LongLiteral ;       -- Store to local variable
-ALLOC_LOCAL      . CompInst ::= "ALLOC_LOCAL" ;         -- Allocate new local slot
-BRANCH_TRUE      . CompInst ::= "BRANCH_TRUE" L ;       -- Conditional jump if true
-BRANCH_FALSE     . CompInst ::= "BRANCH_FALSE" L ;      -- Conditional jump if false
-BRANCH_SUCCESS   . CompInst ::= "BRANCH_SUCCESS" L ;    -- Branch if operation succeeded
-JUMP             . CompInst ::= "JUMP" L ;              -- Unconditional jump
-CMP_EQ           . CompInst ::= "CMP_EQ" ;              -- Equality comparison
-CMP_NEQ          . CompInst ::= "CMP_NEQ" ;             -- Inequality comparison
-CMP_LT           . CompInst ::= "CMP_LT" ;              -- Less than comparison
-CMP_LTE          . CompInst ::= "CMP_LTE" ;             -- Less than or equal
-CMP_GT           . CompInst ::= "CMP_GT" ;              -- Greater than comparison
-CMP_GTE          . CompInst ::= "CMP_GTE" ;             -- Greater than or equal
-ADD              . CompInst ::= "ADD" ;                 -- Arithmetic addition
-SUB              . CompInst ::= "SUB" ;                 -- Arithmetic subtraction
-MUL              . CompInst ::= "MUL" ;                 -- Arithmetic multiplication
-DIV              . CompInst ::= "DIV" ;                 -- Arithmetic division
-MOD              . CompInst ::= "MOD" ;                 -- Arithmetic modulo
-NEG              . CompInst ::= "NEG" ;                 -- Arithmetic negation
-NOT              . CompInst ::= "NOT" ;                 -- Logical NOT
-CONCAT           . CompInst ::= "CONCAT" ;              -- String/collection concatenation
-DIFF             . CompInst ::= "DIFF" ;                -- Collection difference
-INTERPOLATE      . CompInst ::= "INTERPOLATE" ;         -- String interpolation
-CREATE_LIST      . CompInst ::= "CREATE_LIST" LongLiteral ;       -- Create list from n stack elements
-CREATE_TUPLE     . CompInst ::= "CREATE_TUPLE" LongLiteral ;      -- Create tuple from n stack elements
-CREATE_MAP       . CompInst ::= "CREATE_MAP" LongLiteral ;        -- Create map from n key-value pairs on stack
-INVOKE_METHOD    . CompInst ::= "INVOKE_METHOD" ;       -- Method invocation
+NOP              . CompInst    ::= "NOP"                      ; -- No operation
+PUSH_INT         . CompInst    ::= "PUSH_INT" LongLiteral     ; -- Push integer literal
+PUSH_STR         . CompInst    ::= "PUSH_STR" StringLiteral   ; -- Push string literal
+PUSH_BOOL        . CompInst    ::= "PUSH_BOOL" BoolLiteral    ; -- Push boolean literal
+PUSH_PROC        . CompInst    ::= "PUSH_PROC" Proc           ; -- Push process to stack
+POP              . CompInst    ::= "POP"                      ; -- Pop top of stack
+DUP              . CompInst    ::= "DUP"                      ; -- Duplicate top of stack
+LOAD_VAR         . CompInst    ::= "LOAD_VAR" LongLiteral     ; -- Load variable by index
+LOAD_LOCAL       . CompInst    ::= "LOAD_LOCAL" LongLiteral   ; -- Load local variable by index
+STORE_LOCAL      . CompInst    ::= "STORE_LOCAL" LongLiteral  ; -- Store to local variable
+ALLOC_LOCAL      . CompInst    ::= "ALLOC_LOCAL"              ; -- Allocate new local slot
+BRANCH_TRUE      . CompInst    ::= "BRANCH_TRUE" L            ; -- Conditional jump if true
+BRANCH_FALSE     . CompInst    ::= "BRANCH_FALSE" L           ; -- Conditional jump if false
+BRANCH_SUCCESS   . CompInst    ::= "BRANCH_SUCCESS" L         ; -- Branch if operation succeeded
+JUMP             . CompInst    ::= "JUMP" L                   ; -- Unconditional jump
+CMP_EQ           . CompInst    ::= "CMP_EQ"                   ; -- Equality comparison
+CMP_NEQ          . CompInst    ::= "CMP_NEQ"                  ; -- Inequality comparison
+CMP_LT           . CompInst    ::= "CMP_LT"                   ; -- Less than comparison
+CMP_LTE          . CompInst    ::= "CMP_LTE"                  ; -- Less than or equal
+CMP_GT           . CompInst    ::= "CMP_GT"                   ; -- Greater than comparison
+CMP_GTE          . CompInst    ::= "CMP_GTE"                  ; -- Greater than or equal
+ADD              . CompInst    ::= "ADD"                      ; -- Arithmetic addition
+SUB              . CompInst    ::= "SUB"                      ; -- Arithmetic subtraction
+MUL              . CompInst    ::= "MUL"                      ; -- Arithmetic multiplication
+DIV              . CompInst    ::= "DIV"                      ; -- Arithmetic division
+MOD              . CompInst    ::= "MOD"                      ; -- Arithmetic modulo
+NEG              . CompInst    ::= "NEG"                      ; -- Arithmetic negation
+NOT              . CompInst    ::= "NOT"                      ; -- Logical NOT
+CONCAT           . CompInst    ::= "CONCAT"                   ; -- String/collection concatenation
+DIFF             . CompInst    ::= "DIFF"                     ; -- Collection difference
+INTERPOLATE      . CompInst    ::= "INTERPOLATE"              ; -- String interpolation
+CREATE_LIST      . CompInst    ::= "CREATE_LIST" LongLiteral  ; -- Create list from n stack elements
+CREATE_TUPLE     . CompInst    ::= "CREATE_TUPLE" LongLiteral ; -- Create tuple from n stack elements
+CREATE_MAP       . CompInst    ::= "CREATE_MAP" LongLiteral   ; -- Create map from n key-value pairs on stack
+INVOKE_METHOD    . CompInst    ::= "INVOKE_METHOD"            ; -- Method invocation
 
 -- EVALUATION INSTRUCTIONS:
-EVAL             . EvalInst ::= "EVAL" ;                -- Evaluate process on stack (with current locals)
-EVAL_BOOL        . EvalInst ::= "EVAL_BOOL" ;           -- Evaluate to boolean
-EVAL_STAR        . EvalInst ::= "EVAL_STAR" ;           -- Explicit evaluation (star syntax)
-EXEC             . EvalInst ::= "EXEC" ;                -- Execute process on stack
+EVAL             . EvalInst    ::= "EVAL"                     ; -- Evaluate process on stack (with current locals)
+EVAL_BOOL        . EvalInst    ::= "EVAL_BOOL"                ; -- Evaluate to boolean
+EVAL_STAR        . EvalInst    ::= "EVAL_STAR"                ; -- Explicit evaluation (star syntax)
+EXEC             . EvalInst    ::= "EXEC"                     ; -- Execute process on stack
 
 -- PATTERN MATCHING INSTRUCTIONS:
-PATTERN          . PtrnInst ::= "PATTERN" Ptrn ;        -- Load pattern
-MATCH_TEST       . PtrnInst ::= "MATCH_TEST" ;          -- Test pattern match (leaves boolean on stack)
-EXTRACT_BINDINGS . PtrnInst ::= "EXTRACT_BINDINGS" ;    -- Extract bound variables from pattern match
+PATTERN          . PtrnInst    ::= "PATTERN" Ptrn             ; -- Load pattern
+MATCH_TEST       . PtrnInst    ::= "MATCH_TEST"               ; -- Test pattern match (leaves boolean on stack)
+EXTRACT_BINDINGS . PtrnInst    ::= "EXTRACT_BINDINGS"         ; -- Extract bound variables from pattern match
 
 -- PROCESS CONTROL INSTRUCTIONS:
-SPAWN_ASYNC      . PCInst ::= "SPAWN_ASYNC" ;         -- Spawn process asynchronously
-PROC_NEG         . PCInst ::= "PROC_NEG" ;            -- Process negation
+SPAWN_ASYNC      . PCInst      ::= "SPAWN_ASYNC"              ; -- Spawn process asynchronously
+PROC_NEG         . PCInst      ::= "PROC_NEG"                 ; -- Process negation
 
 -- REFERENCE INSTRUCTIONS:
-COPY             . RefInst ::= "COPY" ;                -- Copy value
-MOVE             . RefInst ::= "MOVE" ;                -- Move value
-REF              . RefInst ::= "REF" ;                 -- Create reference
-LOAD_METHOD      . RefInst ::= "LOAD_METHOD" Name ;    -- Load method name for invocation
+COPY             . RefInst     ::= "COPY"                     ; -- Copy value
+MOVE             . RefInst     ::= "MOVE"                     ; -- Move value
+REF              . RefInst     ::= "REF"                      ; -- Create reference
+LOAD_METHOD      . RefInst     ::= "LOAD_METHOD" Name         ; -- Load method name for invocation
 
 -- RSpace Instructions (Type-Specific)
 -- RSPACE INSTRUCTIONS:
-TELL             . RSpaceInst ::= "TELL" Key Value ;          -- Produce data to specified RSpace
-ASK              . RSpaceInst ::= "ASK" Key Cont ;          -- Consume data from specified RSpace (blocking)
-ASK_NB           . RSpaceInst ::= "ASK_NB" Key Cont ;  -- Consume data from specified RSpace (non-blocking)
-PEEK             . RSpaceInst ::= "PEEK" Key Cont ;           -- Peek at data without consuming
-MATCH            . RSpaceInst ::= "MATCH" Ptrn Value ;            -- Pattern match against specified RSpace data
--- SELECT        . RSpaceInst ::= "SELECT" ;            Atomic select operation across channels
-NAME_CREATE      . RSpaceInst ::= "NAME_CREATE" ;            -- Create fresh name in specified RSpace
-NAME_QUOTE       . RSpaceInst ::= "NAME_QUOTE" Proc ;              -- Quote process to name in specified RSpace
-NAME_UNQUOTE     . RSpaceInst ::= "NAME_UNQUOTE" Name ;            -- Unquote name to process in specified RSpace
+TELL             . RSpaceInst  ::= "TELL" Key Value           ; -- Produce data to specified RSpace
+ASK              . RSpaceInst  ::= "ASK" Key Cont             ; -- Consume data from specified RSpace (blocking)
+ASK_NB           . RSpaceInst  ::= "ASK_NB" Key Cont          ; -- Consume data from specified RSpace (non-blocking)
+PEEK             . RSpaceInst  ::= "PEEK" Key Cont            ; -- Peek at data without consuming
+MATCH            . RSpaceInst  ::= "MATCH" Ptrn Value         ; -- Pattern match against specified RSpace data
+-- SELECT        . RSpaceInst  ::= "SELECT"                   ; Atomic select operation across channels
+NAME_CREATE      . RSpaceInst  ::= "NAME_CREATE"              ; -- Create fresh name in specified RSpace
+NAME_QUOTE       . RSpaceInst  ::= "NAME_QUOTE" Proc          ; -- Quote process to name in specified RSpace
+NAME_UNQUOTE     . RSpaceInst  ::= "NAME_UNQUOTE" Name        ; -- Unquote name to process in specified RSpace
 -- PATTERN_COMPILE <type>         // Compile pattern for specified RSpace matching
 -- PATTERN_BIND <type>            // Bind pattern variables from specified RSpace match
-CONT_STORE       . RSpaceInst ::= "CONT_STORE" Cont ;     -- Store continuation in specified RSpace
-CONT_RESUME      . RSpaceInst ::= "CONT_RESUME" Cont ;     -- Resume stored continuation from specified RSpace
-BUNDLE_BEGIN     . RSpaceInst ::= "BUNDLE_BEGIN" ;    -- Start bundle in specified RSpace
-BUNDLE_END       . RSpaceInst ::= "BUNDLE_END" ;       -- End bundle in specified RSpace
+CONT_STORE       . RSpaceInst  ::= "CONT_STORE" Cont          ; -- Store continuation in specified RSpace
+CONT_RESUME      . RSpaceInst  ::= "CONT_RESUME" Cont         ; -- Resume stored continuation from specified RSpace
+BUNDLE_BEGIN     . RSpaceInst  ::= "BUNDLE_BEGIN"             ; -- Start bundle in specified RSpace
+BUNDLE_END       . RSpaceInst  ::= "BUNDLE_END"               ; -- End bundle in specified RSpace
 
 -- **** Unresolved types ****
-ErrorProc . Proc  ::= "Boom!" ;
-ErrorName . Name  ::= "Boom!" ;
-ErrorCont . Cont  ::= "Boom!" ;
-ErrorPtrn . Ptrn  ::= "Boom!" ;
-ErrorL    . L     ::= "Boom!" ;
-ErrorKey  . Key   ::= "Boom!" ;
-ErrorVal  . Value ::= "Boom!" ;
-
--- Literals
--- Booleans:
-BoolTrue.   BoolLiteral ::= "true" ;
-BoolFalse.  BoolLiteral ::= "false" ;
+ErrorProc        . Proc        ::= "Boom!"                    ;
+ErrorName        . Name        ::= "Boom!"                    ;
+ErrorCont        . Cont        ::= "Boom!"                    ;
+ErrorPtrn        . Ptrn        ::= "Boom!"                    ;
+ErrorL           . L           ::= "Boom!"                    ;
+ErrorKey         . Key         ::= "Boom!"                    ;
+ErrorVal         . Value       ::= "Boom!"                    ;
